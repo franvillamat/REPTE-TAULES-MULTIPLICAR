@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mestre de les Taules - 3r PDC (Seguiment)</title>
+    <title>Mestre de les Taules - 3r PDC (Versió Web)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -18,12 +18,6 @@
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .card-table:hover {
-            transform: translateY(-5px);
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
         }
 
         .correct { animation: pulseGreen 0.5s ease; }
@@ -44,120 +38,87 @@
 </head>
 <body class="min-h-screen flex flex-col items-center p-4 md:p-8">
 
-    <!-- Login View (Primer pas) -->
+    <!-- Pantalla d'Inici -->
     <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
         <div class="glass p-8 rounded-[2rem] max-w-sm w-full text-center">
-            <h2 class="text-2xl font-bold mb-6">Benvingut/da al Repte</h2>
-            <p class="text-slate-400 mb-6 text-sm">Introdueix el teu nom i cognom per a registrar el teu progrés.</p>
-            <input type="text" id="student-name" placeholder="El teu nom..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
-            <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all">Començar a practicar</button>
+            <h2 class="text-3xl font-extrabold mb-4 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">REPTE PDC</h2>
+            <p class="text-slate-400 mb-6 text-sm">Escriu el teu nom per a desar la teua puntuació al núvol.</p>
+            <input type="text" id="student-name" placeholder="El teu nom complet..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-blue-500 outline-none text-white">
+            <button id="btn-login" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all disabled:opacity-50">
+                Entrar al Joc
+            </button>
+            <p id="loading-msg" class="text-xs text-slate-500 mt-4">Connectant amb la base de dades...</p>
         </div>
     </div>
 
     <!-- Header -->
     <header class="w-full max-w-4xl flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-extrabold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Mestre de les Taules</h1>
-            <p id="user-display" class="text-slate-400">Usuari: ...</p>
+            <h1 class="text-2xl font-black text-white">Mestre de les Taules</h1>
+            <p id="user-display" class="text-slate-400 text-sm italic">Preparat per a començar?</p>
         </div>
         <div class="glass px-4 py-2 rounded-2xl flex items-center gap-4">
             <div class="text-center">
-                <p class="text-xs uppercase text-slate-500 font-bold">Punts</p>
+                <p class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Punts</p>
                 <p id="score" class="text-xl font-black text-blue-400">0</p>
             </div>
             <div class="text-center border-l border-slate-700 pl-4">
-                <p class="text-xs uppercase text-slate-500 font-bold">Ratxa</p>
+                <p class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Ratxa</p>
                 <p id="streak" class="text-xl font-black text-orange-400">0 🔥</p>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main id="app-container" class="w-full max-w-4xl pb-20">
+    <main class="w-full max-w-4xl">
 
         <!-- Menu Principal -->
         <div id="menu-view" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            <script>
-                for(let i=1; i<=12; i++) {
-                    document.write(`
-                        <button onclick="startPractice(${i})" class="glass card-table p-6 rounded-3xl text-center group transition-all">
-                            <span class="block text-4xl mb-2 group-hover:scale-110 transition-transform">✖️</span>
-                            <span class="block text-xl font-bold">Taula del ${i}</span>
-                        </button>
-                    `);
-                }
-            </script>
-            <button onclick="startChallenge()" class="col-span-2 glass p-6 rounded-3xl text-center bg-gradient-to-br from-purple-600/20 to-blue-600/20 border-purple-500/30 hover:border-purple-500 transition-all">
-                <span class="block text-4xl mb-2">⚡</span>
-                <span class="block text-xl font-bold">MODE REPTE MIXT</span>
-                <span class="text-xs text-purple-300">Totes les taules amb temps</span>
-            </button>
+            <!-- Es genera per JS -->
         </div>
 
-        <!-- Joc en curs -->
+        <!-- Joc -->
         <div id="game-view" class="hidden glass p-8 md:p-12 rounded-[2rem] text-center max-w-2xl mx-auto">
-            <div class="flex justify-between items-center mb-8">
-                <button onclick="showMenu()" class="text-slate-400 hover:text-white flex items-center gap-2">
-                    <span>← Tornar</span>
-                </button>
-                <div id="timer-container" class="hidden">
-                    <span id="timer" class="text-2xl font-mono font-bold text-red-400">10s</span>
-                </div>
+            <div class="flex justify-between items-center mb-8 text-slate-400">
+                <button onclick="location.reload()" class="hover:text-white">← Abandonar</button>
+                <div id="timer-container" class="hidden">🕒 <span id="timer" class="font-mono font-bold">10s</span></div>
             </div>
             <div class="mb-12">
-                <p id="question-text" class="text-7xl md:text-8xl font-black tracking-tighter mb-4">7 × 8</p>
-                <div id="feedback" class="h-8 text-lg font-bold"></div>
+                <p id="question-text" class="text-7xl md:text-8xl font-black mb-4">7 × 8</p>
+                <div id="feedback" class="h-8 font-bold text-lg"></div>
             </div>
             <div id="options-grid" class="grid grid-cols-2 gap-4"></div>
         </div>
 
         <!-- Resultats -->
         <div id="result-view" class="hidden glass p-8 rounded-[2rem] text-center max-w-md mx-auto">
-            <h2 class="text-4xl font-black mb-4">Bravo! 🎉</h2>
-            <p id="result-stats" class="text-xl text-slate-300 mb-8"></p>
-            <p id="save-status" class="text-sm text-emerald-400 mb-4 font-bold"></p>
-            <button onclick="showMenu()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-bold transition-colors">Continuar practicant</button>
+            <h2 class="text-4xl font-black mb-4 text-emerald-400">Molt bé! 🎉</h2>
+            <p id="result-stats" class="text-xl mb-8">Sessió completada.</p>
+            <button onclick="location.reload()" class="w-full py-4 bg-blue-600 rounded-2xl font-bold">Torna al Menú</button>
         </div>
 
-        <!-- Secció de Seguiment (Només Professor) -->
-        <div class="mt-20 border-t border-slate-800 pt-10">
-            <button onclick="toggleTeacherView()" class="text-slate-600 text-xs hover:text-slate-400 transition-colors uppercase tracking-widest font-bold">
-                Accés Professor (Visualitzar Progrés)
-            </button>
-            <div id="teacher-view" class="hidden mt-6 glass p-6 rounded-2xl">
-                <h3 class="text-xl font-bold mb-4 text-blue-400">Registre d'activitat de l'alumnat</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="text-slate-500 border-b border-slate-800">
-                            <tr>
-                                <th class="pb-2">Alumne/a</th>
-                                <th class="pb-2">Activitat</th>
-                                <th class="pb-2">Punts</th>
-                                <th class="pb-2">Data</th>
-                            </tr>
-                        </thead>
-                        <tbody id="teacher-logs">
-                            <!-- Logs es carregaran aquí -->
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Tauler Professor -->
+        <div class="mt-20 border-t border-slate-800 pt-10 opacity-30 hover:opacity-100 transition-opacity">
+            <button onclick="document.getElementById('teacher-view').classList.toggle('hidden')" class="text-xs uppercase tracking-widest font-bold">Accés Professor</button>
+            <div id="teacher-view" class="hidden mt-4 glass p-4 rounded-xl">
+                <h3 class="font-bold mb-4">Últims resultats de l'alumnat:</h3>
+                <div id="teacher-logs" class="text-xs space-y-2">Carregant dades...</div>
             </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // CONFIGURACIÓ FIREBASE
+        // CONFIGURACIÓ (Substituïda pel sistema en temps d'execució)
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'taules-pdc';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        // ESTAT GLOBAL
         let studentName = "";
         let currentMode = 'practice';
         let currentTable = 1;
@@ -166,187 +127,143 @@
         let questionCount = 0;
         let correctAnswer = 0;
         let timerInterval;
-        let timeLeft = 10;
-        let user = null;
 
-        // AUTH & SYNC
-        window.login = () => {
-            const nameInput = document.getElementById('student-name').value.trim();
-            if (nameInput.length < 3) {
-                alert("Per favor, posa el teu nom real per a poder guardar el progrés.");
-                return;
+        // LOGIN I INICIALITZACIÓ
+        document.getElementById('btn-login').onclick = async () => {
+            const name = document.getElementById('student-name').value.trim();
+            if (name.length < 3) return alert("Posa el teu nom!");
+
+            studentName = name;
+            document.getElementById('user-display').innerText = `Alumne/a: ${studentName}`;
+
+            try {
+                await signInAnonymously(auth);
+                document.getElementById('login-view').classList.add('hidden');
+                initApp();
+            } catch (e) {
+                alert("Error de connexió. Reintenta-ho.");
             }
-            studentName = nameInput;
-            document.getElementById('user-display').innerText = `Usuari: ${studentName}`;
-            document.getElementById('login-view').classList.add('hidden');
-
-            signInAnonymously(auth).catch(console.error);
         };
 
-        onAuthStateChanged(auth, (u) => {
-            user = u;
-            if (user) loadTeacherLogs();
-        });
+        function initApp() {
+            renderMenu();
+            loadTeacherLogs();
+        }
 
-        // FUNCIONS DEL JOC
-        window.showMenu = () => {
-            clearInterval(timerInterval);
-            hideAll();
-            document.getElementById('menu-view').classList.remove('hidden');
-        };
+        function renderMenu() {
+            const menu = document.getElementById('menu-view');
+            menu.innerHTML = '';
+            for(let i=1; i<=12; i++) {
+                const btn = document.createElement('button');
+                btn.className = "glass p-6 rounded-3xl card-table hover:border-blue-500 transition-all";
+                btn.innerHTML = `<span class="block text-3xl mb-1">✖️</span><span class="font-bold">Taula del ${i}</span>`;
+                btn.onclick = () => startPractice(i);
+                menu.appendChild(btn);
+            }
+            const challenge = document.createElement('button');
+            challenge.className = "col-span-2 glass p-6 rounded-3xl bg-gradient-to-br from-purple-600/20 to-blue-600/20";
+            challenge.innerHTML = `<span class="block text-3xl mb-1">⚡</span><span class="font-bold">REPTE MIXT</span>`;
+            challenge.onclick = () => startChallenge();
+            menu.appendChild(challenge);
+        }
 
         window.startPractice = (table) => {
             currentMode = 'practice';
             currentTable = table;
-            resetGame();
-            document.getElementById('timer-container').classList.add('hidden');
-            nextQuestion();
+            score = 0; streak = 0; questionCount = 0;
             showView('game');
+            nextQuestion();
         };
 
         window.startChallenge = () => {
             currentMode = 'challenge';
-            resetGame();
+            score = 0; streak = 0; questionCount = 0;
             document.getElementById('timer-container').classList.remove('hidden');
-            nextQuestion();
             showView('game');
+            nextQuestion();
         };
 
-        function resetGame() {
-            score = 0;
-            streak = 0;
-            questionCount = 0;
-            updateUI();
-        }
-
         function nextQuestion() {
-            if (questionCount >= 10 && currentMode === 'practice') {
-                saveProgress();
+            if (questionCount >= 10) {
+                endGame();
                 return;
             }
-
-            const num1 = currentMode === 'practice' ? currentTable : Math.floor(Math.random() * 9) + 2;
-            const num2 = Math.floor(Math.random() * 12) + 1;
-            correctAnswer = num1 * num2;
-
-            document.getElementById('question-text').innerText = `${num1} × ${num2}`;
-            document.getElementById('feedback').innerText = '';
-            generateOptions(correctAnswer);
-
-            if (currentMode === 'challenge') resetTimer();
+            const n1 = currentMode === 'practice' ? currentTable : Math.floor(Math.random()*9)+2;
+            const n2 = Math.floor(Math.random()*12)+1;
+            correctAnswer = n1 * n2;
+            document.getElementById('question-text').innerText = `${n1} × ${n2}`;
+            generateOptions();
+            if (currentMode === 'challenge') startTimer();
         }
 
-        function generateOptions(correct) {
-            const options = new Set([correct]);
-            while(options.size < 4) {
-                const wrong = correct + (Math.floor(Math.random() * 12) - 6);
-                if (wrong > 0 && wrong !== correct) options.add(wrong);
-            }
+        function generateOptions() {
+            const opts = new Set([correctAnswer]);
+            while(opts.size < 4) opts.add(correctAnswer + (Math.floor(Math.random()*10)-5));
             const grid = document.getElementById('options-grid');
             grid.innerHTML = '';
-            [...options].sort(() => Math.random() - 0.5).forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'glass py-6 rounded-2xl text-3xl font-bold hover:bg-slate-700 transition-colors';
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(opt, btn);
-                grid.appendChild(btn);
+            [...opts].sort(() => Math.random()-0.5).forEach(o => {
+                const b = document.createElement('button');
+                b.className = "glass py-6 rounded-2xl text-2xl font-bold";
+                b.innerText = o;
+                b.onclick = () => {
+                    if (o === correctAnswer) {
+                        score += 10; streak++;
+                        b.classList.add('correct', 'bg-emerald-600/40');
+                    } else {
+                        streak = 0;
+                        b.classList.add('wrong', 'bg-red-600/40');
+                    }
+                    questionCount++;
+                    updateUI();
+                    setTimeout(nextQuestion, 600);
+                };
+                grid.appendChild(b);
             });
         }
 
-        function checkAnswer(selected, element) {
-            if (selected === correctAnswer) {
-                score += 10;
-                streak++;
-                element.classList.add('correct', 'bg-emerald-600/40');
-                setTimeout(nextQuestion, 600);
-            } else {
-                streak = 0;
-                element.classList.add('wrong', 'bg-red-600/40');
-                setTimeout(nextQuestion, 1200);
-            }
-            questionCount++;
-            updateUI();
-        }
-
-        async function saveProgress() {
-            document.getElementById('save-status').innerText = "Guardant progrés...";
+        async function endGame() {
             showView('result');
-            document.getElementById('result-stats').innerText = `Has acabat la sessió amb ${score} punts!`;
-
-            if (!user) return;
-
+            document.getElementById('result-stats').innerText = `Has aconseguit ${score} punts!`;
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'scores'), {
                     student: studentName,
-                    mode: currentMode,
-                    table: currentMode === 'practice' ? currentTable : 'Mixta',
                     points: score,
+                    table: currentMode === 'practice' ? currentTable : 'Mixta',
                     timestamp: serverTimestamp()
                 });
-                document.getElementById('save-status').innerText = "Progrés guardat correctament al núvol ✅";
-            } catch (e) {
-                document.getElementById('save-status').innerText = "Error en guardar. Avisa al profe.";
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // VISTA PROFESSOR
-        window.toggleTeacherView = () => {
-            const view = document.getElementById('teacher-view');
-            view.classList.toggle('hidden');
-        };
-
-        function loadTeacherLogs() {
-            const q = collection(db, 'artifacts', appId, 'public', 'data', 'scores');
-            // Nota: En l'entorn real, es filtraria per temps, aquí agafem els últims
-            onSnapshot(q, (snapshot) => {
-                const tbody = document.getElementById('teacher-logs');
-                tbody.innerHTML = '';
-
-                // Ordenem en memòria per data descendent (seguint les regles de no usar orderBy complex)
-                const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                             .sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-
-                docs.forEach(data => {
-                    const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : 'Recent';
-                    const tr = document.createElement('tr');
-                    tr.className = "border-b border-slate-800/50";
-                    tr.innerHTML = `
-                        <td class="py-3 font-bold text-blue-300">${data.student}</td>
-                        <td class="py-3 text-slate-400">Taula ${data.table}</td>
-                        <td class="py-3 text-emerald-400 font-bold">${data.points}</td>
-                        <td class="py-3 text-slate-500 text-xs">${date}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }, (error) => console.error("Error logs:", error));
+        function startTimer() {
+            clearInterval(timerInterval);
+            let t = 10;
+            document.getElementById('timer').innerText = t + 's';
+            timerInterval = setInterval(() => {
+                t--;
+                document.getElementById('timer').innerText = t + 's';
+                if (t <= 0) { questionCount++; nextQuestion(); }
+            }, 1000);
         }
 
-        // UTILS
-        function hideAll() {
-            ['menu-view', 'game-view', 'result-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
+        function showView(v) {
+            ['menu', 'game', 'result'].forEach(id => document.getElementById(id+'-view').classList.add('hidden'));
+            document.getElementById(v+'-view').classList.remove('hidden');
         }
-        function showView(id) {
-            hideAll();
-            document.getElementById(id + '-view').classList.remove('hidden');
-        }
+
         function updateUI() {
             document.getElementById('score').innerText = score;
-            document.getElementById('streak').innerText = streak + (streak > 5 ? ' 🔥' : ' ✨');
+            document.getElementById('streak').innerText = streak + ' 🔥';
         }
-        function resetTimer() {
-            clearInterval(timerInterval);
-            timeLeft = 10;
-            document.getElementById('timer').innerText = timeLeft + 's';
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').innerText = timeLeft + 's';
-                if (timeLeft <= 0) {
-                    streak = 0;
-                    updateUI();
-                    nextQuestion();
-                    questionCount++;
-                }
-            }, 1000);
+
+        function loadTeacherLogs() {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'scores'), (snap) => {
+                const logs = document.getElementById('teacher-logs');
+                logs.innerHTML = '';
+                snap.docs.slice(-10).reverse().forEach(d => {
+                    const data = d.data();
+                    logs.innerHTML += `<div class="border-b border-slate-800 pb-1"><b>${data.student}</b>: ${data.points} pts (Taula ${data.table})</div>`;
+                });
+            });
         }
     </script>
 </body>
